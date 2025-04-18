@@ -1,0 +1,1066 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Africa Quiz Speed Test</title>
+    <style>
+        :root {
+            /* African-inspired color scheme */
+            --primary-color: #f7a400; /* Orange/gold */
+            --secondary-color: #e78b00;
+            --accent-color: #c60c30; /* Red */
+            --correct-color: #4caf50;
+            --incorrect-color: #f44336;
+            --timer-bg: #e0e0e0;
+            --white: #ffffff;
+            --dark: #333333;
+            --gray: #808080;
+            --light-gray: #f5f5f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-selection {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: var(--white);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-start {
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .quiz-container {
+            display: none;
+        }
+
+        .question-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .timer-container {
+            margin-bottom: 1rem;
+        }
+
+        .timer-bar {
+            height: 10px;
+            width: 100%;
+            background-color: var(--timer-bg);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .timer-progress {
+            height: 100%;
+            width: 100%;
+            background-color: var(--primary-color);
+            transition: width 1s linear;
+        }
+
+        .question {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .options {
+            list-style-type: none;
+        }
+
+        .option {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .option:hover {
+            background-color: #e8e8e8;
+        }
+
+        .option.correct {
+            background-color: var(--correct-color);
+            color: var(--white);
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-color);
+            color: var(--white);
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .correct-feedback {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct-color);
+        }
+
+        .incorrect-feedback {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect-color);
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .restart-btn {
+            margin-top: 1rem;
+        }
+
+        .blurred-option {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .upgrade-message {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 1rem;
+            background-color: rgba(198, 12, 48, 0.2);
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            font-weight: bold;
+            color: #c60c30;
+        }
+
+        /* Add styles for popup ad */
+        .popup-ad {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            text-align: center;
+            z-index: 9999;
+            text-decoration: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .popup-ad h3 {
+            color: white;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .popup-ad p {
+            color: white;
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .popup-ad .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 18px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .popup-ad .countdown {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffc107;
+            font-size: 16px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        /* Add styles for share functionality */
+        .share-container {
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .share-progress {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .share-progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #4CAF50;
+            transition: width 0.5s ease;
+        }
+
+        .telegram-share-btn {
+            background-color: #2eaade;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        .telegram-share-btn:hover {
+            background-color: #239ac4;
+        }
+
+        .telegram-share-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .share-instructions {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        /* Add styles for answers summary */
+        .answers-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        #correct-answers {
+            background-color: #e8f5e9;
+        }
+
+        #wrong-answers {
+            background-color: #ffebee;
+        }
+
+        .answers-section h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .answers-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .answers-section li {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .africa-symbol {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            margin: 0 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f7a400' d='M50,10 c-22,0-40,18-40,40 c0,22,18,40,40,40 c22,0,40-18,40-40 c0-22-18-40-40-40z M30,30 c0,0,10-5,20-5 c10,0,20,5,20,5 c0,0,5,10,5,20 c0,10-5,20-5,20 c0,0-10,5-20,5 c-10,0-20-5-20-5 c0,0-5-10-5-20 c0-10,5-20,5-20z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Africa Quiz Speed Test <span class="africa-symbol"></span></h1>
+            <p>Test your knowledge about Africa with this timed quiz!</p>
+        </header>
+
+        <div class="topic-selection" id="topicSelection">
+            <label for="topic">Select a Topic:</label>
+            <select id="topic">
+                <option value="">-- Select a topic --</option>
+                <option value="history">African History</option>
+                <option value="culture">Culture & Traditions</option>
+                <option value="geography">Geography & Wildlife</option>
+                <option value="politics" class="blurred-option">Politics & Government</option>
+                <option value="cuisine" class="blurred-option">African Cuisine</option>
+                <option value="tourism" class="blurred-option">Tourism & Travel</option>
+                <option value="sports" class="blurred-option">Sports & Entertainment</option>
+            </select>
+            <button id="startBtn" class="btn btn-start">Start Quiz</button>
+            <div id="upgradeMessage" class="upgrade-message">UPGRADE TO PRO</div>
+        </div>
+
+        <div id="quizContainer" class="quiz-container">
+            <div class="question-counter" id="questionCounter">Question 1 of 10</div>
+            <div class="timer-container">
+                <div class="timer-bar">
+                    <div class="timer-progress" id="timerProgress"></div>
+                </div>
+            </div>
+            <div class="question-container">
+                <div class="question" id="question"></div>
+                <ul class="options" id="options"></ul>
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <h2>Quiz Completed!</h2>
+            <p>Your score:</p>
+            <div class="score" id="score">**</div>
+            
+            <div class="share-container">
+                <h3>Share and Unlock Full Score!</h3>
+                <p class="share-instructions">Share the quiz with friends to reveal your complete results!</p>
+                
+                <div class="share-progress">
+                    <div class="share-progress-bar" id="share-progress-bar"></div>
+                </div>
+                
+                <p id="share-count-text">Shares: 0/5</p>
+                
+                <button id="telegram-share-btn" class="telegram-share-btn">
+                    Share on Telegram
+                </button>
+                
+                <button id="reveal-score-btn" class="btn" disabled>
+                    Reveal Full Score
+                </button>
+            </div>
+            
+            <div id="answers-summary" style="display: none;">
+                <h3>Your Answers Summary</h3>
+                <div id="correct-answers" class="answers-section">
+                    <h4>Correct Answers: <span id="correct-count">0</span></h4>
+                    <ul id="correct-list"></ul>
+                </div>
+                <div id="wrong-answers" class="answers-section">
+                    <h4>Incorrect Answers: <span id="wrong-count">0</span></h4>
+                    <ul id="wrong-list"></ul>
+                </div>
+            </div>
+            
+            <p id="timeStats"></p>
+            <button id="restartBtn" class="btn restart-btn" style="display: none;">Take Another Quiz</button>
+        </div>
+    </div>
+
+    <!-- Add popup ad HTML -->
+    <a id="popupAd" class="popup-ad" href="https://africaquiz.com/pro" target="_blank">
+        <button class="close-button" onclick="closePopup(event)">✕</button>
+        <div class="popup-content">
+            <h3>🚀 Upgrade to Africa Quiz Pro!</h3>
+            <p><strong>Unlock More Features:</strong> Get access to all Africa Quiz Topics, advanced analytics, and exclusive rewards!</p>
+            <p>Join the Pro Version now and become an Africa expert! 🚀</p>    
+            <div class="cta-button">
+                CLICK HERE TO UPGRADE
+            </div>
+            <p id="countdown" class="countdown">Click X at the top right to close this Popup</p>
+        </div>
+    </a>
+
+    <script>
+        // DOM elements
+        const topicSelectionEl = document.getElementById('topicSelection');
+        const topicSelectEl = document.getElementById('topic');
+        const startBtn = document.getElementById('startBtn');
+        const upgradeMessageEl = document.getElementById('upgradeMessage');
+        const quizContainerEl = document.getElementById('quizContainer');
+        const questionCounterEl = document.getElementById('questionCounter');
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const feedbackEl = document.getElementById('feedback');
+        const timerProgressEl = document.getElementById('timerProgress');
+        const resultsEl = document.getElementById('results');
+        const scoreEl = document.getElementById('score');
+        const timeStatsEl = document.getElementById('timeStats');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Quiz state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 60;
+        let questions = [];
+        let startTime, endTime;
+        let answeredQuestions = 0;
+        let totalTimeUsed = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+        let shareCount = 0;
+
+        // Additional DOM elements for new functionality
+        const telegramShareBtn = document.getElementById('telegram-share-btn');
+        const revealScoreBtn = document.getElementById('reveal-score-btn');
+        const shareProgressBar = document.getElementById('share-progress-bar');
+        const shareCountText = document.getElementById('share-count-text');
+        const answersSummary = document.getElementById('answers-summary');
+
+        // Questions bank
+        const questionsBank = {
+            history: [
+                {
+                    question: "Which North African country was home to the ancient civilization of Carthage?",
+                    options: ["Tunisia", "Egypt", "Libya", "Morocco"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Who was the first president of Ghana after independence?",
+                    options: ["Kwame Nkrumah", "Jomo Kenyatta", "Julius Nyerere", "Nelson Mandela"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which empire was founded by Sundiata Keita in the 13th century?",
+                    options: ["Mali Empire", "Ghana Empire", "Songhai Empire", "Benin Empire"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African leader was known as 'Mwalimu' (Teacher) and led Tanzania to independence?",
+                    options: ["Julius Nyerere", "Jomo Kenyatta", "Kenneth Kaunda", "Milton Obote"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which ancient kingdom was located in what is now Ethiopia?",
+                    options: ["Axum", "Zimbabwe", "Kush", "Dahomey"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which European country colonized most of West Africa?",
+                    options: ["France", "Britain", "Portugal", "Belgium"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "The Berlin Conference of 1884-1885 resulted in what major development in African history?",
+                    options: ["The 'Scramble for Africa'", "African Independence", "End of slavery", "Formation of the African Union"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "In what year did Nelson Mandela become president of South Africa?",
+                    options: ["1994", "1990", "1989", "2000"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "The Great Zimbabwe ruins are evidence of which ancient African civilization?",
+                    options: ["Shona civilization", "Egyptian civilization", "Zulu kingdom", "Ashanti Empire"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African country was never colonized except for a brief Italian occupation?",
+                    options: ["Ethiopia", "Liberia", "South Africa", "Egypt"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Who led the Mau Mau rebellion against British colonial rule in Kenya?",
+                    options: ["Dedan Kimathi", "Jomo Kenyatta", "Tom Mboya", "Oginga Odinga"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which country was formerly known as Upper Volta?",
+                    options: ["Burkina Faso", "Mali", "Niger", "Chad"],
+                    correctAnswer: 0
+                }
+            ],
+            culture: [
+                {
+                    question: "Which African musical style originated in Congo and became popular across Africa?",
+                    options: ["Soukous", "Highlife", "Afrobeat", "Mbalax"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which of these is a traditional West African stringed instrument?",
+                    options: ["Kora", "Djembe", "Balafon", "Talking drum"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "The Maasai people are primarily found in which two countries?",
+                    options: ["Kenya and Tanzania", "Ethiopia and Somalia", "Uganda and Rwanda", "South Africa and Botswana"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which of these is NOT one of the major language families in Africa?",
+                    options: ["Indo-European", "Niger-Congo", "Afro-Asiatic", "Nilo-Saharan"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which colorful clothing is associated with South African Ndebele culture?",
+                    options: ["Amaphotho", "Kente", "Kitenge", "Dashiki"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African dance style originated in Côte d'Ivoire and involves a specific shoulder movement?",
+                    options: ["Coupé-Décalé", "Azonto", "Kizomba", "Makossa"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "What is the name of the traditional Swahili celebration marking the end of Ramadan?",
+                    options: ["Eid al-Fitr", "Kwanzaa", "Maulidi", "Umoja"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which traditional practice in many African cultures involves oral historians who preserve and recite history?",
+                    options: ["Griots", "Sangomas", "Orishas", "Nyakures"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which Nigerian author wrote 'Things Fall Apart'?",
+                    options: ["Chinua Achebe", "Wole Soyinka", "Chimamanda Ngozi Adichie", "Ben Okri"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which traditional fabric-making technique is associated with Mali and involves mud-dyeing?",
+                    options: ["Bogolanfini (Mud cloth)", "Kente weaving", "Adinkra printing", "Batik"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "What is 'Ubuntu', an important philosophical concept in southern Africa?",
+                    options: ["Humanity towards others", "Divine protection", "Coming of age", "Ancestral worship"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which famous South African musician was known as the 'White Zulu'?",
+                    options: ["Johnny Clegg", "Hugh Masekela", "Miriam Makeba", "Lucky Dube"],
+                    correctAnswer: 0
+                }
+            ],
+            geography: [
+                {
+                    question: "What is the largest country in Africa by land area?",
+                    options: ["Algeria", "Democratic Republic of Congo", "Sudan", "Libya"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which mountain is the highest peak in Africa?",
+                    options: ["Mount Kilimanjaro", "Mount Kenya", "Atlas Mountains", "Drakensberg"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which desert covers much of North Africa?",
+                    options: ["Sahara Desert", "Kalahari Desert", "Namib Desert", "Arabian Desert"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which body of water separates Africa from Europe?",
+                    options: ["Mediterranean Sea", "Red Sea", "Atlantic Ocean", "Indian Ocean"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which of these is the longest river in Africa?",
+                    options: ["Nile River", "Congo River", "Niger River", "Zambezi River"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African country is known as the 'Land of a Thousand Hills'?",
+                    options: ["Rwanda", "Ethiopia", "Kenya", "South Africa"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "What is the approximate population of Africa as of 2023?",
+                    options: ["1.4 billion", "900 million", "2 billion", "500 million"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which of these is NOT one of Africa's Great Lakes?",
+                    options: ["Lake Chad", "Lake Victoria", "Lake Tanganyika", "Lake Malawi"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African island nation is the fourth largest island in the world?",
+                    options: ["Madagascar", "Mauritius", "Seychelles", "Cape Verde"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which waterfall is located on the Zambezi River between Zambia and Zimbabwe?",
+                    options: ["Victoria Falls", "Tugela Falls", "Murchison Falls", "Blue Nile Falls"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African animal is known as the 'king of the savanna'?",
+                    options: ["Lion", "Elephant", "Giraffe", "Rhinoceros"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which African country has the most pyramids?",
+                    options: ["Sudan", "Egypt", "Algeria", "Ethiopia"],
+                    correctAnswer: 0
+                }
+            ]
+        };
+
+
+// Initialize the quiz
+function init() {
+    // Event listeners
+    startBtn.addEventListener('click', startQuiz);
+    restartBtn.addEventListener('click', restartQuiz);
+    topicSelectEl.addEventListener('change', handleTopicChange);
+    
+    // Disable blurred options
+    const blurredOptions = document.querySelectorAll('.blurred-option');
+    blurredOptions.forEach(option => {
+        option.disabled = true;
+        option.addEventListener('click', (e) => {
+            e.preventDefault();
+            upgradeMessageEl.textContent = 'Upgrade to Pro to unlock';
+            upgradeMessageEl.style.display = 'block';
+            topicSelectEl.value = '';
+        });
+    });
+    
+    // Add event listeners for share functionality
+    if (telegramShareBtn && revealScoreBtn) {
+        telegramShareBtn.addEventListener('click', handleShare);
+        revealScoreBtn.addEventListener('click', revealFullScore);
+    }
+    
+    // Add popup event listeners
+    document.querySelector('.close-button').addEventListener('click', closePopup);
+    
+    // Show pop-up every 55 seconds
+    setInterval(showPopup, 55000);
+}
+
+// Handle topic change
+function handleTopicChange() {
+    const selectedTopic = topicSelectEl.value;
+    const selectedOption = topicSelectEl.options[topicSelectEl.selectedIndex];
+    
+    // Reset upgrade message
+    upgradeMessageEl.style.display = 'none';
+    
+    // Check if selected option is blurred
+    if (selectedOption && selectedOption.classList.contains('blurred-option')) {
+        upgradeMessageEl.textContent = 'Upgrade to Pro to unlock';
+        upgradeMessageEl.style.display = 'block';
+        topicSelectEl.value = ''; // Reset selection
+    }
+}
+
+// Start the quiz
+function startQuiz() {
+    const selectedTopic = topicSelectEl.value;
+    
+    if (!selectedTopic) {
+        alert('Please select a topic first!');
+        return;
+    }
+    
+    // Load questions for selected topic
+    questions = getRandomQuestions(selectedTopic, 10);
+    
+    if (questions.length === 0) {
+        alert('No questions available for this topic!');
+        return;
+    }
+    
+    // Hide topic selection and show quiz
+    topicSelectionEl.style.display = 'none';
+    quizContainerEl.style.display = 'block';
+    
+    // Reset quiz state
+    currentQuestionIndex = 0;
+    score = 0;
+    answeredQuestions = 0;
+    totalTimeUsed = 0;
+    startTime = new Date();
+    
+    // Load first question
+    loadQuestion();
+}
+
+// Get random questions from the bank
+function getRandomQuestions(topic, count) {
+    if (!questionsBank[topic] || questionsBank[topic].length === 0) {
+        return [];
+    }
+    
+    const topicQuestions = [...questionsBank[topic]];
+    const selectedQuestions = [];
+    
+    // Ensure we don't try to get more questions than are available
+    count = Math.min(count, topicQuestions.length);
+    
+    for (let i = 0; i < count; i++) {
+        const randomIndex = Math.floor(Math.random() * topicQuestions.length);
+        selectedQuestions.push(topicQuestions.splice(randomIndex, 1)[0]);
+    }
+    
+    return selectedQuestions;
+}
+
+// Load a question
+function loadQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+        endQuiz();
+        return;
+    }
+    
+    const question = questions[currentQuestionIndex];
+    
+    // Update question counter
+    questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    
+    // Load question text
+    questionEl.textContent = question.question;
+    
+    // Clear options and feedback
+    optionsEl.innerHTML = '';
+    feedbackEl.innerHTML = '';
+    feedbackEl.className = 'feedback';
+    
+    // Add options
+    question.options.forEach((option, index) => {
+        const li = document.createElement('li');
+        li.textContent = option;
+        li.className = 'option';
+        li.setAttribute('data-index', index);
+        li.addEventListener('click', () => selectAnswer(index));
+        optionsEl.appendChild(li);
+    });
+    
+    // Reset and start timer - Changed from 60 to 15 seconds
+    timeLeft = 15;
+    timerProgressEl.style.width = '100%';
+    clearInterval(timer);
+    startTimer();
+}
+
+// Start the timer
+function startTimer() {
+    timer = setInterval(() => {
+        timeLeft--;
+        
+        // Update timer bar - Changed calculation to be based on 15 seconds
+        const percentage = (timeLeft / 15) * 100;
+        timerProgressEl.style.width = `${percentage}%`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            handleTimeUp();
+        }
+    }, 1000);
+}
+
+// Handle time up
+function handleTimeUp() {
+    // Mark question as timed out
+    feedbackEl.textContent = "Time's up! Moving to next question...";
+    feedbackEl.className = 'feedback incorrect-feedback';
+    
+    // Disable all options
+    const options = document.querySelectorAll('.option');
+    const question = questions[currentQuestionIndex];
+    const correctIndex = question.correctAnswer ?? question.answer;
+    
+    options.forEach(option => {
+        option.style.pointerEvents = 'none';
+        
+        // Highlight correct answer
+        if (parseInt(option.getAttribute('data-index')) === correctIndex) {
+            option.classList.add('correct');
+        }
+    });
+    
+    // Record time used - Changed from 60 to 15 seconds
+    totalTimeUsed += 15;
+    answeredQuestions++;
+    
+    // Store answer with correct answer for timed out questions
+    userAnswers.push({
+        question: question.question,
+        userAnswer: "Time's up",
+        correctAnswer: question.options[correctIndex],
+        isCorrect: false
+    });
+    // Move to next question after 2 seconds
+    setTimeout(nextQuestion, 2000);
+}
+
+function selectAnswer(index) {
+    clearInterval(timer);
+    
+    const correctIndex = questions[currentQuestionIndex].correctAnswer ?? questions[currentQuestionIndex].answer;
+    const isCorrect = index === correctIndex;
+    
+    // Record time used - Changed from 60 to 15 seconds
+    const timeUsed = 15 - timeLeft;
+    totalTimeUsed += timeUsed;
+    answeredQuestions++;
+    
+    // Store answer with correct answer
+    const question = questions[currentQuestionIndex];
+    userAnswers.push({
+        question: question.question,
+        userAnswer: question.options[index],
+        correctAnswer: question.options[correctIndex],
+        isCorrect: isCorrect
+    });
+    
+    // Update score if correct
+    if (isCorrect) {
+        score++;
+    }
+    
+    // Disable options without highlighting
+    const options = document.querySelectorAll('.option');
+    options.forEach(option => {
+        option.style.pointerEvents = 'none';
+    });
+    
+    // Move to next question after 1 second
+    setTimeout(nextQuestion, 1000);
+}
+
+// Move to next question
+function nextQuestion() {
+    currentQuestionIndex++;
+    loadQuestion();
+}
+
+// End the quiz
+function endQuiz() {
+    endTime = new Date();
+    const totalTime = (endTime - startTime) / 1000; // in seconds
+    
+    // Hide quiz container and show results
+    quizContainerEl.style.display = 'none';
+    resultsEl.style.display = 'block';
+    
+    // Store actual score and show masked version
+    quizScore = score;
+    scoreEl.textContent = '**';
+    
+    // Reset share functionality
+    shareCount = 0;
+    shareProgressBar.style.width = '0%';
+    shareCountText.textContent = 'Shares: 0/5';
+    revealScoreBtn.disabled = true;
+    telegramShareBtn.disabled = false;
+    answersSummary.style.display = 'none';
+    restartBtn.style.display = 'none';
+    
+    // Update time stats
+    const avgTimePerQuestion = answeredQuestions > 0 ? (totalTimeUsed / answeredQuestions).toFixed(1) : 0;
+    timeStatsEl.textContent = `Total time: ${totalTime.toFixed(1)} seconds
+                              Average time per question: ${avgTimePerQuestion} seconds`;
+}
+
+// Restart the quiz
+function restartQuiz() {
+    // Hide results and show topic selection
+    resultsEl.style.display = 'none';
+    topicSelectionEl.style.display = 'block';
+    
+    // Reset topic selection
+    topicSelectEl.value = '';
+    upgradeMessageEl.style.display = 'none';
+}
+
+// Function to handle share action
+function handleShare() {
+    // Increment share count
+    shareCount++;
+
+    // Update progress bar and text
+    const progressPercentage = (shareCount / 5) * 100;
+    shareProgressBar.style.width = `${progressPercentage}%`;
+    shareCountText.textContent = `Shares: ${shareCount}/5`;
+
+    // Open Telegram share link
+    const telegramShareMessage = encodeURIComponent(
+        "🇬🇲 99% of people can't get a perfect score on this Africa quiz! " +
+        "Think you know everything about Africa? Test your knowledge now and challenge a friend to beat you! 🌍🔥\n\n" +
+        "CLICK THE LINK FOR THE QUIZ 👇 [https://yourquizlink.com]"
+    );
+    window.open(`https://t.me/share/url?url=${telegramShareMessage}`, '_blank');
+
+    // Enable reveal score button if shares reach 5
+    if (shareCount >= 5) {
+        revealScoreBtn.disabled = false;
+        telegramShareBtn.disabled = true;
+    }
+}
+
+// Function to reveal full score
+function revealFullScore() {
+    scoreEl.textContent = `${quizScore}/${questions.length}`;
+    
+    // Show answers summary
+    const correctList = document.getElementById('correct-list');
+    const wrongList = document.getElementById('wrong-list');
+    const correctCount = document.getElementById('correct-count');
+    const wrongCount = document.getElementById('wrong-count');
+    
+    // Clear previous lists
+    correctList.innerHTML = '';
+    wrongList.innerHTML = '';
+    
+    // Count correct and wrong answers
+    let correctCountNum = 0;
+    let wrongCountNum = 0;
+    
+    // Populate lists
+    userAnswers.forEach(answer => {
+        const li = document.createElement('li');
+        if (answer.isCorrect) {
+            li.textContent = `Q: ${answer.question} | Your Answer: ${answer.userAnswer}`;
+            correctList.appendChild(li);
+            correctCountNum++;
+        } else {
+            li.textContent = `Q: ${answer.question} | Your Answer: ${answer.userAnswer} | Correct Answer: ${answer.correctAnswer}`;
+            wrongList.appendChild(li);
+            wrongCountNum++;
+        }
+    });
+    
+    // Update counts
+    correctCount.textContent = correctCountNum;
+    wrongCount.textContent = wrongCountNum;
+    
+    // Show summary and restart button
+    answersSummary.style.display = 'block';
+    restartBtn.style.display = 'inline-block';
+    
+    alert(`Congratulations! Your full score is ${quizScore}/${questions.length}. Great job completing the Africa quiz!`);
+    revealScoreBtn.disabled = true;
+}
+
+// Add popup functionality
+function showPopup() {
+    let popup = document.getElementById("popupAd");
+    let countdown = document.getElementById("countdown");
+    let timeLeft = 35;
+    popup.style.display = "flex";
+    
+    let timer = setInterval(() => {
+        timeLeft--;
+        countdown.innerText = `Closing in ${timeLeft}s`;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            popup.style.display = "none";
+        }
+    }, 1000);
+}
+
+function closePopup(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.getElementById("popupAd").style.display = "none";
+}
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
