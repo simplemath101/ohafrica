@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -500,6 +499,7 @@ let totalTimeUsed = 0;
 let userAnswers = [];
 let quizScore = 0;
 let shareCount = 0;
+let popupTimer; // Track the popup interval timer
 
 // Additional DOM elements for new functionality
 const telegramShareBtn = document.getElementById('telegram-share-btn');
@@ -725,11 +725,20 @@ function init() {
     }
     
     // Add popup event listeners
-    document.querySelector('.close-button').addEventListener('click', closePopup);
+    const closeButton = document.querySelector('.close-button');
+    if (closeButton) {
+        closeButton.addEventListener('click', closePopup);
+    }
     
-    // Show pop-up every 55 seconds - but don't show it immediately
+    // Make sure popup is hidden initially
+    const popup = document.getElementById("popupAd");
+    if (popup) {
+        popup.style.display = "none";
+    }
+    
+    // Start the popup timer after 55 seconds
     setTimeout(() => {
-        setInterval(showPopup, 55000);
+        popupTimer = setInterval(showPopup, 55000);
     }, 55000);
 }
 
@@ -1041,13 +1050,17 @@ function revealFullScore() {
 // Add popup functionality
 function showPopup() {
     let popup = document.getElementById("popupAd");
+    if (!popup) return;
+    
     let countdown = document.getElementById("countdown");
     let timeLeft = 35;
     popup.style.display = "flex";
     
     let timer = setInterval(() => {
         timeLeft--;
-        countdown.innerText = `Closing in ${timeLeft}s`;
+        if (countdown) {
+            countdown.innerText = `Closing in ${timeLeft}s`;
+        }
         if (timeLeft <= 0) {
             clearInterval(timer);
             popup.style.display = "none";
@@ -1056,9 +1069,15 @@ function showPopup() {
 }
 
 function closePopup(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    document.getElementById("popupAd").style.display = "none";
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const popup = document.getElementById("popupAd");
+    if (popup) {
+        popup.style.display = "none";
+    }
 }
 
 // Initialize the app
