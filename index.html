@@ -473,230 +473,230 @@
 
     <script>
         // DOM elements
-        const topicSelectionEl = document.getElementById('topicSelection');
-        const topicSelectEl = document.getElementById('topic');
-        const startBtn = document.getElementById('startBtn');
-        const upgradeMessageEl = document.getElementById('upgradeMessage');
-        const quizContainerEl = document.getElementById('quizContainer');
-        const questionCounterEl = document.getElementById('questionCounter');
-        const questionEl = document.getElementById('question');
-        const optionsEl = document.getElementById('options');
-        const feedbackEl = document.getElementById('feedback');
-        const timerProgressEl = document.getElementById('timerProgress');
-        const resultsEl = document.getElementById('results');
-        const scoreEl = document.getElementById('score');
-        const timeStatsEl = document.getElementById('timeStats');
-        const restartBtn = document.getElementById('restartBtn');
+const topicSelectionEl = document.getElementById('topicSelection');
+const topicSelectEl = document.getElementById('topic');
+const startBtn = document.getElementById('startBtn');
+const upgradeMessageEl = document.getElementById('upgradeMessage');
+const quizContainerEl = document.getElementById('quizContainer');
+const questionCounterEl = document.getElementById('questionCounter');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const feedbackEl = document.getElementById('feedback');
+const timerProgressEl = document.getElementById('timerProgress');
+const resultsEl = document.getElementById('results');
+const scoreEl = document.getElementById('score');
+const timeStatsEl = document.getElementById('timeStats');
+const restartBtn = document.getElementById('restartBtn');
 
-        // Quiz state
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let timer;
-        let timeLeft = 60;
-        let questions = [];
-        let startTime, endTime;
-        let answeredQuestions = 0;
-        let totalTimeUsed = 0;
-        let userAnswers = [];
-        let quizScore = 0;
-        let shareCount = 0;
+// Quiz state
+let currentQuestionIndex = 0;
+let score = 0;
+let timer;
+let timeLeft = 60;
+let questions = [];
+let startTime, endTime;
+let answeredQuestions = 0;
+let totalTimeUsed = 0;
+let userAnswers = [];
+let quizScore = 0;
+let shareCount = 0;
 
-        // Additional DOM elements for new functionality
-        const telegramShareBtn = document.getElementById('telegram-share-btn');
-        const revealScoreBtn = document.getElementById('reveal-score-btn');
-        const shareProgressBar = document.getElementById('share-progress-bar');
-        const shareCountText = document.getElementById('share-count-text');
-        const answersSummary = document.getElementById('answers-summary');
+// Additional DOM elements for new functionality
+const telegramShareBtn = document.getElementById('telegram-share-btn');
+const revealScoreBtn = document.getElementById('reveal-score-btn');
+const shareProgressBar = document.getElementById('share-progress-bar');
+const shareCountText = document.getElementById('share-count-text');
+const answersSummary = document.getElementById('answers-summary');
 
-        // Questions bank
-        const questionsBank = {
-            history: [
-                {
-                    question: "Which North African country was home to the ancient civilization of Carthage?",
-                    options: ["Tunisia", "Egypt", "Libya", "Morocco"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Who was the first president of Ghana after independence?",
-                    options: ["Kwame Nkrumah", "Jomo Kenyatta", "Julius Nyerere", "Nelson Mandela"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which empire was founded by Sundiata Keita in the 13th century?",
-                    options: ["Mali Empire", "Ghana Empire", "Songhai Empire", "Benin Empire"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African leader was known as 'Mwalimu' (Teacher) and led Tanzania to independence?",
-                    options: ["Julius Nyerere", "Jomo Kenyatta", "Kenneth Kaunda", "Milton Obote"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which ancient kingdom was located in what is now Ethiopia?",
-                    options: ["Axum", "Zimbabwe", "Kush", "Dahomey"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which European country colonized most of West Africa?",
-                    options: ["France", "Britain", "Portugal", "Belgium"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "The Berlin Conference of 1884-1885 resulted in what major development in African history?",
-                    options: ["The 'Scramble for Africa'", "African Independence", "End of slavery", "Formation of the African Union"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "In what year did Nelson Mandela become president of South Africa?",
-                    options: ["1994", "1990", "1989", "2000"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "The Great Zimbabwe ruins are evidence of which ancient African civilization?",
-                    options: ["Shona civilization", "Egyptian civilization", "Zulu kingdom", "Ashanti Empire"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African country was never colonized except for a brief Italian occupation?",
-                    options: ["Ethiopia", "Liberia", "South Africa", "Egypt"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Who led the Mau Mau rebellion against British colonial rule in Kenya?",
-                    options: ["Dedan Kimathi", "Jomo Kenyatta", "Tom Mboya", "Oginga Odinga"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which country was formerly known as Upper Volta?",
-                    options: ["Burkina Faso", "Mali", "Niger", "Chad"],
-                    correctAnswer: 0
-                }
-            ],
-            culture: [
-                {
-                    question: "Which African musical style originated in Congo and became popular across Africa?",
-                    options: ["Soukous", "Highlife", "Afrobeat", "Mbalax"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which of these is a traditional West African stringed instrument?",
-                    options: ["Kora", "Djembe", "Balafon", "Talking drum"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "The Maasai people are primarily found in which two countries?",
-                    options: ["Kenya and Tanzania", "Ethiopia and Somalia", "Uganda and Rwanda", "South Africa and Botswana"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which of these is NOT one of the major language families in Africa?",
-                    options: ["Indo-European", "Niger-Congo", "Afro-Asiatic", "Nilo-Saharan"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which colorful clothing is associated with South African Ndebele culture?",
-                    options: ["Amaphotho", "Kente", "Kitenge", "Dashiki"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African dance style originated in Côte d'Ivoire and involves a specific shoulder movement?",
-                    options: ["Coupé-Décalé", "Azonto", "Kizomba", "Makossa"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "What is the name of the traditional Swahili celebration marking the end of Ramadan?",
-                    options: ["Eid al-Fitr", "Kwanzaa", "Maulidi", "Umoja"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which traditional practice in many African cultures involves oral historians who preserve and recite history?",
-                    options: ["Griots", "Sangomas", "Orishas", "Nyakures"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which Nigerian author wrote 'Things Fall Apart'?",
-                    options: ["Chinua Achebe", "Wole Soyinka", "Chimamanda Ngozi Adichie", "Ben Okri"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which traditional fabric-making technique is associated with Mali and involves mud-dyeing?",
-                    options: ["Bogolanfini (Mud cloth)", "Kente weaving", "Adinkra printing", "Batik"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "What is 'Ubuntu', an important philosophical concept in southern Africa?",
-                    options: ["Humanity towards others", "Divine protection", "Coming of age", "Ancestral worship"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which famous South African musician was known as the 'White Zulu'?",
-                    options: ["Johnny Clegg", "Hugh Masekela", "Miriam Makeba", "Lucky Dube"],
-                    correctAnswer: 0
-                }
-            ],
-            geography: [
-                {
-                    question: "What is the largest country in Africa by land area?",
-                    options: ["Algeria", "Democratic Republic of Congo", "Sudan", "Libya"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which mountain is the highest peak in Africa?",
-                    options: ["Mount Kilimanjaro", "Mount Kenya", "Atlas Mountains", "Drakensberg"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which desert covers much of North Africa?",
-                    options: ["Sahara Desert", "Kalahari Desert", "Namib Desert", "Arabian Desert"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which body of water separates Africa from Europe?",
-                    options: ["Mediterranean Sea", "Red Sea", "Atlantic Ocean", "Indian Ocean"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which of these is the longest river in Africa?",
-                    options: ["Nile River", "Congo River", "Niger River", "Zambezi River"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African country is known as the 'Land of a Thousand Hills'?",
-                    options: ["Rwanda", "Ethiopia", "Kenya", "South Africa"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "What is the approximate population of Africa as of 2023?",
-                    options: ["1.4 billion", "900 million", "2 billion", "500 million"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which of these is NOT one of Africa's Great Lakes?",
-                    options: ["Lake Chad", "Lake Victoria", "Lake Tanganyika", "Lake Malawi"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African island nation is the fourth largest island in the world?",
-                    options: ["Madagascar", "Mauritius", "Seychelles", "Cape Verde"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which waterfall is located on the Zambezi River between Zambia and Zimbabwe?",
-                    options: ["Victoria Falls", "Tugela Falls", "Murchison Falls", "Blue Nile Falls"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African animal is known as the 'king of the savanna'?",
-                    options: ["Lion", "Elephant", "Giraffe", "Rhinoceros"],
-                    correctAnswer: 0
-                },
-                {
-                    question: "Which African country has the most pyramids?",
-                    options: ["Sudan", "Egypt", "Algeria", "Ethiopia"],
-                    correctAnswer: 0
-                }
-            ]
-        };
+// Questions bank
+const questionsBank = {
+    history: [
+        {
+            question: "Which North African country was home to the ancient civilization of Carthage?",
+            options: ["Tunisia", "Egypt", "Libya", "Morocco"],
+            correctAnswer: 0
+        },
+        {
+            question: "Who was the first president of Ghana after independence?",
+            options: ["Kwame Nkrumah", "Jomo Kenyatta", "Julius Nyerere", "Nelson Mandela"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which empire was founded by Sundiata Keita in the 13th century?",
+            options: ["Mali Empire", "Ghana Empire", "Songhai Empire", "Benin Empire"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African leader was known as 'Mwalimu' (Teacher) and led Tanzania to independence?",
+            options: ["Julius Nyerere", "Jomo Kenyatta", "Kenneth Kaunda", "Milton Obote"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which ancient kingdom was located in what is now Ethiopia?",
+            options: ["Axum", "Zimbabwe", "Kush", "Dahomey"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which European country colonized most of West Africa?",
+            options: ["France", "Britain", "Portugal", "Belgium"],
+            correctAnswer: 0
+        },
+        {
+            question: "The Berlin Conference of 1884-1885 resulted in what major development in African history?",
+            options: ["The 'Scramble for Africa'", "African Independence", "End of slavery", "Formation of the African Union"],
+            correctAnswer: 0
+        },
+        {
+            question: "In what year did Nelson Mandela become president of South Africa?",
+            options: ["1994", "1990", "1989", "2000"],
+            correctAnswer: 0
+        },
+        {
+            question: "The Great Zimbabwe ruins are evidence of which ancient African civilization?",
+            options: ["Shona civilization", "Egyptian civilization", "Zulu kingdom", "Ashanti Empire"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African country was never colonized except for a brief Italian occupation?",
+            options: ["Ethiopia", "Liberia", "South Africa", "Egypt"],
+            correctAnswer: 0
+        },
+        {
+            question: "Who led the Mau Mau rebellion against British colonial rule in Kenya?",
+            options: ["Dedan Kimathi", "Jomo Kenyatta", "Tom Mboya", "Oginga Odinga"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which country was formerly known as Upper Volta?",
+            options: ["Burkina Faso", "Mali", "Niger", "Chad"],
+            correctAnswer: 0
+        }
+    ],
+    culture: [
+        {
+            question: "Which African musical style originated in Congo and became popular across Africa?",
+            options: ["Soukous", "Highlife", "Afrobeat", "Mbalax"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which of these is a traditional West African stringed instrument?",
+            options: ["Kora", "Djembe", "Balafon", "Talking drum"],
+            correctAnswer: 0
+        },
+        {
+            question: "The Maasai people are primarily found in which two countries?",
+            options: ["Kenya and Tanzania", "Ethiopia and Somalia", "Uganda and Rwanda", "South Africa and Botswana"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which of these is NOT one of the major language families in Africa?",
+            options: ["Indo-European", "Niger-Congo", "Afro-Asiatic", "Nilo-Saharan"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which colorful clothing is associated with South African Ndebele culture?",
+            options: ["Amaphotho", "Kente", "Kitenge", "Dashiki"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African dance style originated in Côte d'Ivoire and involves a specific shoulder movement?",
+            options: ["Coupé-Décalé", "Azonto", "Kizomba", "Makossa"],
+            correctAnswer: 0
+        },
+        {
+            question: "What is the name of the traditional Swahili celebration marking the end of Ramadan?",
+            options: ["Eid al-Fitr", "Kwanzaa", "Maulidi", "Umoja"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which traditional practice in many African cultures involves oral historians who preserve and recite history?",
+            options: ["Griots", "Sangomas", "Orishas", "Nyakures"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which Nigerian author wrote 'Things Fall Apart'?",
+            options: ["Chinua Achebe", "Wole Soyinka", "Chimamanda Ngozi Adichie", "Ben Okri"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which traditional fabric-making technique is associated with Mali and involves mud-dyeing?",
+            options: ["Bogolanfini (Mud cloth)", "Kente weaving", "Adinkra printing", "Batik"],
+            correctAnswer: 0
+        },
+        {
+            question: "What is 'Ubuntu', an important philosophical concept in southern Africa?",
+            options: ["Humanity towards others", "Divine protection", "Coming of age", "Ancestral worship"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which famous South African musician was known as the 'White Zulu'?",
+            options: ["Johnny Clegg", "Hugh Masekela", "Miriam Makeba", "Lucky Dube"],
+            correctAnswer: 0
+        }
+    ],
+    geography: [
+        {
+            question: "What is the largest country in Africa by land area?",
+            options: ["Algeria", "Democratic Republic of Congo", "Sudan", "Libya"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which mountain is the highest peak in Africa?",
+            options: ["Mount Kilimanjaro", "Mount Kenya", "Atlas Mountains", "Drakensberg"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which desert covers much of North Africa?",
+            options: ["Sahara Desert", "Kalahari Desert", "Namib Desert", "Arabian Desert"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which body of water separates Africa from Europe?",
+            options: ["Mediterranean Sea", "Red Sea", "Atlantic Ocean", "Indian Ocean"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which of these is the longest river in Africa?",
+            options: ["Nile River", "Congo River", "Niger River", "Zambezi River"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African country is known as the 'Land of a Thousand Hills'?",
+            options: ["Rwanda", "Ethiopia", "Kenya", "South Africa"],
+            correctAnswer: 0
+        },
+        {
+            question: "What is the approximate population of Africa as of 2023?",
+            options: ["1.4 billion", "900 million", "2 billion", "500 million"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which of these is NOT one of Africa's Great Lakes?",
+            options: ["Lake Chad", "Lake Victoria", "Lake Tanganyika", "Lake Malawi"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African island nation is the fourth largest island in the world?",
+            options: ["Madagascar", "Mauritius", "Seychelles", "Cape Verde"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which waterfall is located on the Zambezi River between Zambia and Zimbabwe?",
+            options: ["Victoria Falls", "Tugela Falls", "Murchison Falls", "Blue Nile Falls"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African animal is known as the 'king of the savanna'?",
+            options: ["Lion", "Elephant", "Giraffe", "Rhinoceros"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which African country has the most pyramids?",
+            options: ["Sudan", "Egypt", "Algeria", "Ethiopia"],
+            correctAnswer: 0
+        }
+    ]
+};
 
 
 // Initialize the quiz
@@ -727,8 +727,10 @@ function init() {
     // Add popup event listeners
     document.querySelector('.close-button').addEventListener('click', closePopup);
     
-    // Show pop-up every 55 seconds
-    setInterval(showPopup, 55000);
+    // Show pop-up every 55 seconds - but don't show it immediately
+    setTimeout(() => {
+        setInterval(showPopup, 55000);
+    }, 55000);
 }
 
 // Handle topic change
